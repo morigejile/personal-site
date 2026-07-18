@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>从零搭建 Kubernetes 可观测性体系 · 张明轩</title><meta name="description" content="从 Prometheus 到 Grafana，一步步记录如何在生产环境中构建可观测性管道——指标采集、告警规则、面板设计，以及踩过的坑和最终方案。"><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Dancing+Script:wght@500;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet"><style>nav{display:flex;align-items:center;padding:20px 0;border-bottom:1px solid #e8d5c8;background:#f5f0e3f2;position:sticky;top:0;z-index:10}.nav-links{display:flex;gap:61.5px;font-size:16px}.nav-links a{color:#8b7355;transition:color .2s;white-space:nowrap}.nav-links a:hover{color:#3e2723}.nav-mori{font-family:Dancing Script,cursive;font-weight:700;font-size:24px}.container{max-width:960px;margin:0 auto;padding:0 24px;width:100%}.section-title{font-size:14px;text-transform:uppercase;letter-spacing:2.5px;color:#b8956a;margin-bottom:24px;font-weight:600}.section-block{padding:60px 0 42px}.section-block+.section-block{padding-top:0}footer{border-top:1px solid #e8d5c8;padding:24px 40px;text-align:center;font-size:12px;color:#b8956a}.heart-accent{color:#c44a7c}.thought-link{text-decoration:none;color:inherit}.thought-link:hover h2,.thought-link:hover h3{color:#8b6914}.btn-more{text-align:center}.btn-more a{color:#8b6914;font-size:14px;text-decoration:none;font-weight:500;padding:8px 24px;border:1px solid #d4b896;border-radius:4px;display:inline-block;transition:all .2s}.btn-more a:hover{background:#faf3ea;border-color:#b8956a}.list-header{padding:60px 0 36px}.list-category-tag{display:inline-block;padding:6px 20px;background:#f5e6d3;color:#8b6914;font-size:13px;font-weight:600;border-radius:4px}.list-description{color:#b8956a;font-size:14px;margin-top:12px}.list-items{padding-bottom:60px}.list-item{display:block;padding:24px 0;border-bottom:1px solid #e8d5c8;transition:background .15s}.list-item:last-child{border-bottom:none}.list-item:hover .list-item-title{color:#8b6914}.list-item-title{font-size:20px;font-weight:600;line-height:1.5}.list-item-meta{display:flex;align-items:center;gap:16px;font-size:13px;color:#b8956a;margin-top:8px}.list-item-tags{display:flex;gap:6px}.list-item-tags span{padding:2px 10px;background:#f5e6d3;color:#8b6914;border-radius:3px;font-size:11px}.list-item-summary{color:#8b7355;font-size:14px;line-height:1.8;margin-top:8px}*,*:before,*:after{box-sizing:border-box;margin:0;padding:0}body{font-family:"Noto Serif SC",serif;background:#f5f0e3;color:#3e2723;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}
+.article-layout{display:flex;gap:48px;max-width:1200px;margin:0 auto;padding:0 24px}.toc-sidebar{width:200px;flex-shrink:0;position:sticky;top:100px;align-self:start;padding:48px 0 0}.toc-title{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#b8956a;margin-bottom:16px;font-weight:600}.toc-nav{display:flex;flex-direction:column;gap:6px}.toc-link{color:#8b7355;font-size:13px;line-height:1.6;transition:color .15s}.toc-link:hover{color:#c96442}.toc-link.depth-2{padding-left:0}.toc-link.depth-3{padding-left:12px;font-size:12px}.article-body{flex:1;min-width:0;padding:48px 0 60px}.article-header{margin-bottom:36px}.article-meta{display:flex;align-items:center;gap:16px;font-size:13px;color:#b8956a;margin-bottom:12px}.article-category{padding:3px 14px;background:#f5e6d3;color:#8b6914;border-radius:3px;font-size:12px;font-weight:600}.article-title{font-size:28px;font-weight:700;line-height:1.4;margin-bottom:12px}.article-tags{display:flex;gap:6px}.article-tags span{padding:2px 10px;background:#f5e6d3;color:#8b6914;border-radius:3px;font-size:11px}.article-content{font-size:16px;line-height:1.9;color:#3e2723}.article-content h2,.article-content h3{scroll-margin-top:100px;margin-top:2em;margin-bottom:.6em;font-weight:600;line-height:1.4}.article-content h2{font-size:22px;border-bottom:1px solid #e8d5c8;padding-bottom:8px}.article-content h3{font-size:18px}.article-content p{margin-bottom:1.2em}.article-content ul,.article-content ol{margin-bottom:1.2em;padding-left:1.5em}.article-content li{margin-bottom:.4em}.article-content code{font-family:Source Code Pro,monospace;background:#faf3ea;padding:2px 6px;border-radius:3px;font-size:.9em}.article-content pre code{background:none;padding:0}.article-content pre{background:#faf3ea;border:1px solid #e8d5c8;border-radius:6px;padding:16px;overflow-x:auto;font-size:14px;line-height:1.6;margin-bottom:1.5em}.article-content a{color:#c96442;text-decoration:underline;text-underline-offset:3px}.article-content a:hover{color:#8b6914}.article-content blockquote{border-left:3px solid #d4b896;padding-left:16px;margin:1.5em 0;color:#8b7355;font-style:italic}.article-content img{max-width:100%;border-radius:6px;margin:1.5em 0}.article-nav{display:flex;justify-content:space-between;gap:24px;margin-top:48px;padding-top:24px;border-top:1px solid #e8d5c8}.article-nav-link{flex:1;text-decoration:none;padding:16px;border:1px solid #e8d5c8;border-radius:6px;transition:border-color .2s}.article-nav-link:hover{border-color:#b8956a}.article-nav-link.next{text-align:right}.nav-label{display:block;font-size:12px;color:#b8956a;margin-bottom:4px}.nav-title{font-size:15px;font-weight:600;color:#3e2723;line-height:1.4}.related-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding-bottom:48px}.related-card{display:block;padding:20px;border:1px solid #e8d5c8;border-radius:6px;text-decoration:none;transition:border-color .2s}.related-card:hover{border-color:#b8956a}.related-card h4{font-size:15px;font-weight:600;line-height:1.5;margin-bottom:8px}.related-meta{font-size:12px;color:#b8956a;display:flex;gap:8px}@media(max-width:900px){.toc-sidebar{display:none}.article-layout{max-width:960px}}@media(max-width:640px){.related-grid{grid-template-columns:1fr}.article-nav{flex-direction:column}.article-nav-link.next{text-align:left}}
+</style></head> <body> <nav> <div class="container"> <div class="nav-links"> <a href="/">首页</a> <a href="/ai-learning/">AI 学习记</a> <a href="/ops-notes/">运维记</a> <a href="/reading-life/">读书 &amp; 生活感悟</a> <a href="/projects/">作品集</a> <a href="/about/">About&nbsp; <span class="nav-mori">mori</span></a> </div> </div> </nav> <main>  <div class="article-layout"> <!-- TOC Sidebar --> <aside class="toc-sidebar"> <div class="toc-title">目录</div> <nav class="toc-nav"> <a href="#为什么需要可观测性" class="toc-link depth-2"> 为什么需要可观测性 </a><a href="#架构设计" class="toc-link depth-2"> 架构设计 </a><a href="#prometheus-部署" class="toc-link depth-2"> Prometheus 部署 </a><a href="#资源估算" class="toc-link depth-3"> 资源估算 </a><a href="#grafana-面板设计" class="toc-link depth-2"> Grafana 面板设计 </a><a href="#告警规则实战" class="toc-link depth-2"> 告警规则实战 </a><a href="#踩过的坑" class="toc-link depth-2"> 踩过的坑 </a><a href="#总结" class="toc-link depth-2"> 总结 </a> </nav> </aside> <!-- Article body --> <article class="article-body"> <div class="article-header"> <div class="article-meta"> <span class="article-category">运维记</span> <span class="article-date">2026-07-10</span> </div> <h1 class="article-title">从零搭建 Kubernetes 可观测性体系</h1> <div class="article-tags"> <span>可观测性</span><span>Kubernetes</span><span>Prometheus</span><span>Grafana</span> </div> </div> <div class="article-content"> <h2 id="为什么需要可观测性">为什么需要可观测性</h2>
+<p>当你的 Kubernetes 集群运行着几十个微服务时，没有可观测性就像在黑暗中开车。你需要知道：</p>
+<ul>
+<li>服务的健康状态（监控）</li>
+<li>出问题时为什么（日志）</li>
+<li>整体的趋势如何（指标）</li>
+</ul>
+<p>本文重点讲<strong>指标</strong>这一环：用 Prometheus 采集，Grafana 展示。</p>
+<h2 id="架构设计">架构设计</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>服务 Pod (metrics /metrics)</span></span>
+<span class="line"><span>    ↓ 自动发现</span></span>
+<span class="line"><span>Prometheus Server (抓取 + 存储)</span></span>
+<span class="line"><span>    ↓ PromQL</span></span>
+<span class="line"><span>Grafana (面板 + 告警)</span></span>
+<span class="line"><span>    ↓</span></span>
+<span class="line"><span>Alertmanager (通知 → 钉钉/邮件)</span></span></code></pre>
+<p>关键设计决策：Prometheus 走 <strong>Pull 模式</strong>，通过 K8s Service 自动发现目标。</p>
+<h2 id="prometheus-部署">Prometheus 部署</h2>
+<p>使用 Prometheus Operator 是最省心的方式：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">apiVersion</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">monitoring.coreos.com/v1</span></span>
+<span class="line"><span style="color:#85E89D">kind</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">Prometheus</span></span>
+<span class="line"><span style="color:#85E89D">metadata</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">k8s</span></span>
+<span class="line"><span style="color:#85E89D">spec</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  replicas</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2</span></span>
+<span class="line"><span style="color:#85E89D">  retention</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">30d</span></span>
+<span class="line"><span style="color:#85E89D">  resources</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    requests</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      memory</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">8Gi</span></span>
+<span class="line"><span style="color:#85E89D">  serviceMonitorSelector</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    matchLabels</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">      team</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ops</span></span></code></pre>
+<p>这里提一下 <code>retention: 30d</code>——保留 30 天的数据。如果需要更长时间，建议用 Thanos 做长期存储，而不是直接增加 retention。</p>
+<h3 id="资源估算">资源估算</h3>
+<p>我们集群 50 个 Pod，每个 Pod 暴露约 200 个时间序列，总共约 10000 个 series。8GB 内存绰绰有余。如果 series 数量超过 50000，考虑增加内存或做降采样。</p>
+<h2 id="grafana-面板设计">Grafana 面板设计</h2>
+<p>面板设计有几个原则：</p>
+<ol>
+<li><strong>红色 = 故障</strong>：正常状态下面板应该是全绿的，看到红色说明有问题</li>
+<li><strong>从宏观到微观</strong>：先展示整体状态，再提供 drill-down 到具体服务</li>
+<li><strong>黄金信号</strong>：每个服务展示延迟、流量、错误、饱和度</li>
+</ol>
+<p>我自己设计了三个主要 Dashboard：</p>
+<ul>
+<li><strong>集群总览</strong>：节点状态、资源使用、Pod 分布</li>
+<li><strong>服务拓扑</strong>：服务间调用关系、响应时间</li>
+<li><strong>告警面板</strong>：当前告警及历史</li>
+</ul>
+<h2 id="告警规则实战">告警规则实战</h2>
+<p>一条好的告警规则不是 “CPU > 80%“，而是 “CPU > 80% 持续 5 分钟且没有自动扩容”。</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#E1E4E8">- </span><span style="color:#85E89D">alert</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">HighCPUUsage</span></span>
+<span class="line"><span style="color:#85E89D">  expr</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">    avg(rate(node_cpu_seconds_total{mode!="idle"}[5m])) by (instance) > 0.8</span></span>
+<span class="line"><span style="color:#85E89D">  for</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">5m</span></span>
+<span class="line"><span style="color:#85E89D">  labels</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    severity</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">warning</span></span>
+<span class="line"><span style="color:#85E89D">  annotations</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    summary</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"节点 {{ $labels.instance }} CPU 使用率超过 80%"</span></span></code></pre>
+<p>关键参数是 <code>for: 5m</code>——持续 5 分钟才触发，避免瞬时的毛刺导致告警疲劳。</p>
+<h2 id="踩过的坑">踩过的坑</h2>
+<ol>
+<li>
+<p><strong>指标爆炸</strong>：有个服务的 <code>/metrics</code> 返回了 50000 个 time series，因为把每个 HTTP 请求的参数都暴露出来了。加了个 <code>filter</code> 层解决。</p>
+</li>
+<li>
+<p><strong>Grafana 面板加载慢</strong>：面板上放了几十个图表，每个图表单独查 Prometheus。换成 recording rules 预聚合后，从 10 秒降到 1 秒。</p>
+</li>
+<li>
+<p><strong>Alertmanager 重复告警</strong>：两个 Prometheus 实例都抓到了同一个告警，都发给了 Alertmanager。配置了 <code>group_by: ['alertname']</code> 去重解决。</p>
+</li>
+</ol>
+<h2 id="总结">总结</h2>
+<p>可观测性建设是持续迭代的过程，不需要一开始就追求完美。先能看见，再能预警，最后才是智能分析。</p> </div> <!-- Prev / Next --> <div class="article-nav"> <a href="/ops-notes/ci-cd-pipeline-practice/" class="article-nav-link prev"> <span class="nav-label">← 上一篇</span> <span class="nav-title">CI/CD 流水线从设计到落地</span> </a> <div></div> </div> <!-- Related articles --> <section class="related-section"> <div class="section-title" style="margin-top:48px;">相关文章</div> <div class="related-grid"> <a href="/ai-learning/llm-alert-rules/" class="related-card"> <h4>用 LLM 自动生成监控告警规则——可行吗？</h4> <div class="related-meta"> <span>AI 学习记</span> <span>·</span> <span>2026-06-28</span> </div> </a><a href="/projects/web-health-monitor/" class="related-card"> <h4>Web Health Monitor</h4> <div class="related-meta"> <span>作品集</span> <span>·</span> <span>2026-07-01</span> </div> </a> </div> </section> </article> </div>  </main> <footer>
+&copy; 2026&nbsp;&nbsp;&nbsp;&nbsp;<strong>MORI</strong> &middot; 用 <span class="heart-accent">&#x1f49c;</span> 和 AI 搭建
+</footer>  </body> </html> 

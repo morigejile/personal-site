@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>CI/CD 流水线从设计到落地 · 张明轩</title><meta name="description" content="从零设计一套 CI/CD 流水线，涵盖自动构建、测试、部署到多环境，以及过程中的关键决策和教训。"><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Dancing+Script:wght@500;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet"><style>nav{display:flex;align-items:center;padding:20px 0;border-bottom:1px solid #e8d5c8;background:#f5f0e3f2;position:sticky;top:0;z-index:10}.nav-links{display:flex;gap:61.5px;font-size:16px}.nav-links a{color:#8b7355;transition:color .2s;white-space:nowrap}.nav-links a:hover{color:#3e2723}.nav-mori{font-family:Dancing Script,cursive;font-weight:700;font-size:24px}.container{max-width:960px;margin:0 auto;padding:0 24px;width:100%}.section-title{font-size:14px;text-transform:uppercase;letter-spacing:2.5px;color:#b8956a;margin-bottom:24px;font-weight:600}.section-block{padding:60px 0 42px}.section-block+.section-block{padding-top:0}footer{border-top:1px solid #e8d5c8;padding:24px 40px;text-align:center;font-size:12px;color:#b8956a}.heart-accent{color:#c44a7c}.thought-link{text-decoration:none;color:inherit}.thought-link:hover h2,.thought-link:hover h3{color:#8b6914}.btn-more{text-align:center}.btn-more a{color:#8b6914;font-size:14px;text-decoration:none;font-weight:500;padding:8px 24px;border:1px solid #d4b896;border-radius:4px;display:inline-block;transition:all .2s}.btn-more a:hover{background:#faf3ea;border-color:#b8956a}.list-header{padding:60px 0 36px}.list-category-tag{display:inline-block;padding:6px 20px;background:#f5e6d3;color:#8b6914;font-size:13px;font-weight:600;border-radius:4px}.list-description{color:#b8956a;font-size:14px;margin-top:12px}.list-items{padding-bottom:60px}.list-item{display:block;padding:24px 0;border-bottom:1px solid #e8d5c8;transition:background .15s}.list-item:last-child{border-bottom:none}.list-item:hover .list-item-title{color:#8b6914}.list-item-title{font-size:20px;font-weight:600;line-height:1.5}.list-item-meta{display:flex;align-items:center;gap:16px;font-size:13px;color:#b8956a;margin-top:8px}.list-item-tags{display:flex;gap:6px}.list-item-tags span{padding:2px 10px;background:#f5e6d3;color:#8b6914;border-radius:3px;font-size:11px}.list-item-summary{color:#8b7355;font-size:14px;line-height:1.8;margin-top:8px}*,*:before,*:after{box-sizing:border-box;margin:0;padding:0}body{font-family:"Noto Serif SC",serif;background:#f5f0e3;color:#3e2723;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}
+.article-layout{display:flex;gap:48px;max-width:1200px;margin:0 auto;padding:0 24px}.toc-sidebar{width:200px;flex-shrink:0;position:sticky;top:100px;align-self:start;padding:48px 0 0}.toc-title{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:#b8956a;margin-bottom:16px;font-weight:600}.toc-nav{display:flex;flex-direction:column;gap:6px}.toc-link{color:#8b7355;font-size:13px;line-height:1.6;transition:color .15s}.toc-link:hover{color:#c96442}.toc-link.depth-2{padding-left:0}.toc-link.depth-3{padding-left:12px;font-size:12px}.article-body{flex:1;min-width:0;padding:48px 0 60px}.article-header{margin-bottom:36px}.article-meta{display:flex;align-items:center;gap:16px;font-size:13px;color:#b8956a;margin-bottom:12px}.article-category{padding:3px 14px;background:#f5e6d3;color:#8b6914;border-radius:3px;font-size:12px;font-weight:600}.article-title{font-size:28px;font-weight:700;line-height:1.4;margin-bottom:12px}.article-tags{display:flex;gap:6px}.article-tags span{padding:2px 10px;background:#f5e6d3;color:#8b6914;border-radius:3px;font-size:11px}.article-content{font-size:16px;line-height:1.9;color:#3e2723}.article-content h2,.article-content h3{scroll-margin-top:100px;margin-top:2em;margin-bottom:.6em;font-weight:600;line-height:1.4}.article-content h2{font-size:22px;border-bottom:1px solid #e8d5c8;padding-bottom:8px}.article-content h3{font-size:18px}.article-content p{margin-bottom:1.2em}.article-content ul,.article-content ol{margin-bottom:1.2em;padding-left:1.5em}.article-content li{margin-bottom:.4em}.article-content code{font-family:Source Code Pro,monospace;background:#faf3ea;padding:2px 6px;border-radius:3px;font-size:.9em}.article-content pre code{background:none;padding:0}.article-content pre{background:#faf3ea;border:1px solid #e8d5c8;border-radius:6px;padding:16px;overflow-x:auto;font-size:14px;line-height:1.6;margin-bottom:1.5em}.article-content a{color:#c96442;text-decoration:underline;text-underline-offset:3px}.article-content a:hover{color:#8b6914}.article-content blockquote{border-left:3px solid #d4b896;padding-left:16px;margin:1.5em 0;color:#8b7355;font-style:italic}.article-content img{max-width:100%;border-radius:6px;margin:1.5em 0}.article-nav{display:flex;justify-content:space-between;gap:24px;margin-top:48px;padding-top:24px;border-top:1px solid #e8d5c8}.article-nav-link{flex:1;text-decoration:none;padding:16px;border:1px solid #e8d5c8;border-radius:6px;transition:border-color .2s}.article-nav-link:hover{border-color:#b8956a}.article-nav-link.next{text-align:right}.nav-label{display:block;font-size:12px;color:#b8956a;margin-bottom:4px}.nav-title{font-size:15px;font-weight:600;color:#3e2723;line-height:1.4}.related-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding-bottom:48px}.related-card{display:block;padding:20px;border:1px solid #e8d5c8;border-radius:6px;text-decoration:none;transition:border-color .2s}.related-card:hover{border-color:#b8956a}.related-card h4{font-size:15px;font-weight:600;line-height:1.5;margin-bottom:8px}.related-meta{font-size:12px;color:#b8956a;display:flex;gap:8px}@media(max-width:900px){.toc-sidebar{display:none}.article-layout{max-width:960px}}@media(max-width:640px){.related-grid{grid-template-columns:1fr}.article-nav{flex-direction:column}.article-nav-link.next{text-align:left}}
+</style></head> <body> <nav> <div class="container"> <div class="nav-links"> <a href="/">首页</a> <a href="/ai-learning/">AI 学习记</a> <a href="/ops-notes/">运维记</a> <a href="/reading-life/">读书 &amp; 生活感悟</a> <a href="/projects/">作品集</a> <a href="/about/">About&nbsp; <span class="nav-mori">mori</span></a> </div> </div> </nav> <main>  <div class="article-layout"> <!-- TOC Sidebar --> <aside class="toc-sidebar"> <div class="toc-title">目录</div> <nav class="toc-nav"> <a href="#设计目标" class="toc-link depth-2"> 设计目标 </a><a href="#流水线设计" class="toc-link depth-2"> 流水线设计 </a><a href="#ci-阶段pr-触发" class="toc-link depth-3"> CI 阶段（PR 触发） </a><a href="#cd-阶段合并到-main-触发" class="toc-link depth-3"> CD 阶段（合并到 main 触发） </a><a href="#关键决策" class="toc-link depth-2"> 关键决策 </a><a href="#1-单仓库-vs-多仓库" class="toc-link depth-3"> 1. 单仓库 vs 多仓库 </a><a href="#2-镜像标签策略" class="toc-link depth-3"> 2. 镜像标签策略 </a><a href="#3-环境分离" class="toc-link depth-3"> 3. 环境分离 </a><a href="#经验教训" class="toc-link depth-2"> 经验教训 </a><a href="#下一步" class="toc-link depth-2"> 下一步 </a> </nav> </aside> <!-- Article body --> <article class="article-body"> <div class="article-header"> <div class="article-meta"> <span class="article-category">运维记</span> <span class="article-date">2026-06-20</span> </div> <h1 class="article-title">CI/CD 流水线从设计到落地</h1> <div class="article-tags"> <span>CI/CD</span><span>GitHub Actions</span><span>Docker</span> </div> </div> <div class="article-content"> <h2 id="设计目标">设计目标</h2>
+<p>在搭建 CI/CD 流水线之前，先明确目标：</p>
+<ol>
+<li>每次 PR 自动运行测试和代码检查</li>
+<li>合并到 main 后自动构建镜像并部署到 staging</li>
+<li>手动触发生产部署</li>
+<li>回滚能力</li>
+</ol>
+<h2 id="流水线设计">流水线设计</h2>
+<h3 id="ci-阶段pr-触发">CI 阶段（PR 触发）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">CI</span></span>
+<span class="line"><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  pull_request</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    branches</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">main</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  test</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">运行测试</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          pip install -r requirements.txt</span></span>
+<span class="line"><span style="color:#9ECBFF">          pytest --cov=./ --cov-report=xml</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">代码检查</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ruff check .</span></span></code></pre>
+<h3 id="cd-阶段合并到-main-触发">CD 阶段（合并到 main 触发）</h3>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="yaml"><code><span class="line"><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">CD</span></span>
+<span class="line"><span style="color:#79B8FF">on</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  push</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    branches</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">main</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#85E89D">jobs</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">  build</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#85E89D">    runs-on</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">ubuntu-latest</span></span>
+<span class="line"><span style="color:#85E89D">    steps</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">uses</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">actions/checkout@v4</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">构建 Docker 镜像</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          docker build -t myapp:${{ github.sha }} .</span></span>
+<span class="line"><span style="color:#9ECBFF">          docker push registry.example.com/myapp:${{ github.sha }}</span></span>
+<span class="line"><span style="color:#E1E4E8">      - </span><span style="color:#85E89D">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">部署到 staging</span></span>
+<span class="line"><span style="color:#85E89D">        run</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">|</span></span>
+<span class="line"><span style="color:#9ECBFF">          kubectl set image deployment/myapp \</span></span>
+<span class="line"><span style="color:#9ECBFF">            myapp=registry.example.com/myapp:${{ github.sha }}</span></span></code></pre>
+<h2 id="关键决策">关键决策</h2>
+<h3 id="1-单仓库-vs-多仓库">1. 单仓库 vs 多仓库</h3>
+<p>对于中小团队，<strong>单仓库 + 路径过滤</strong> 比多仓库更省心。不需要管理多个仓库的权限、Webhook、Secret。</p>
+<h3 id="2-镜像标签策略">2. 镜像标签策略</h3>
+<p>不要用 <code>latest</code> 标签。用 <code>git commit SHA</code> 作为镜像标签，保证可追溯。每次部署记录 commit SHA 和部署时间。</p>
+<h3 id="3-环境分离">3. 环境分离</h3>
+<p>staging 和 production 应该使用不同的 Kubernetes 命名空间和不同的 Service Account。staging 可以用假的 Secret，production 用真的。</p>
+<h2 id="经验教训">经验教训</h2>
+<ol>
+<li>
+<p><strong>测试要快</strong>：CI 流水线超过 10 分钟，开发者就开始跳过推代码直接合并了。把单元测试和集成测试分开，CI 只跑单元测试。</p>
+</li>
+<li>
+<p><strong>环境一致性</strong>：最痛苦的事情是 “在我电脑上是好的”。用 Docker 确保开发、测试、生产环境一致。</p>
+</li>
+<li>
+<p><strong>回滚要简单</strong>：<code>kubectl rollout undo</code> 是最简单的回滚方式。确保每次部署前都记录上一个版本的镜像 SHA。</p>
+</li>
+</ol>
+<h2 id="下一步">下一步</h2>
+<p>接下来计划引入金丝雀发布和自动回滚——当新版本的错误率超过阈值时自动回滚。</p> </div> <!-- Prev / Next --> <div class="article-nav"> <div></div> <a href="/ops-notes/k8s-observability/" class="article-nav-link next"> <span class="nav-label">下一篇 →</span> <span class="nav-title">从零搭建 Kubernetes 可观测性体系</span> </a> </div> <!-- Related articles --> <section class="related-section"> <div class="section-title" style="margin-top:48px;">相关文章</div> <div class="related-grid"> <a href="/projects/ci-cd-demo/" class="related-card"> <h4>CI/CD Demo 环境</h4> <div class="related-meta"> <span>作品集</span> <span>·</span> <span>2026-06-25</span> </div> </a> </div> </section> </article> </div>  </main> <footer>
+&copy; 2026&nbsp;&nbsp;&nbsp;&nbsp;<strong>MORI</strong> &middot; 用 <span class="heart-accent">&#x1f49c;</span> 和 AI 搭建
+</footer>  </body> </html> 

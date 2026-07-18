@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About mori · 张明轩">
+  <div class="container">
+    <div class="about-page">
+      <div class="about-hero">
+        <h1><span class="about-mori-name">About&nbsp; <span class="mori-script">mori</span></span></h1>
+      </div>
+
+      <div class="about-content">
+        <section>
+          <p>
+            你好，我是 <strong>mori</strong>（张明轩），一名运维工程师。
+          </p>
+          <p>
+            过去几年，我在云原生、可观测性和 CI/CD 领域积累了丰富的实践经验。
+            目前关注的方向是 AI 开发、DevOps 工具链，以及如何用更好的技术提升团队效率。
+          </p>
+        </section>
+
+        <section>
+          <h2>关于这个网站</h2>
+          <p>
+            这是我的个人博客，记录我在技术世界中的学习与思考。
+            这里的内容包括 AI 开发实践、运维技术笔记、读书心得，以及一些生活感悟。
+          </p>
+          <p>
+            网站使用 Astro 构建，采用极简约的大地色系风格，所有内容均由 Markdown 管理。
+          </p>
+        </section>
+
+        <section>
+          <h2>联系方式</h2>
+          <ul class="contact-list">
+            <li>GitHub: <a href="https://github.com/morigejile">github.com/morigejile</a></li>
+            <li>邮件: <a href="mailto:baomorigejile@gmail.com">baomorigejile@gmail.com</a></li>
+            <li>RSS: <a href="/rss.xml">/rss.xml</a></li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  .about-page { padding: 60px 0; }
+  .about-hero { margin-bottom: 48px; }
+  .about-mori-name { font-size: 32px; font-weight: 700; color: #3e2723; }
+  .mori-script { font-family: 'Dancing Script', cursive; font-weight: 700; font-size: 40px; }
+
+  .about-content { max-width: 720px; }
+  .about-content section { margin-bottom: 40px; }
+  .about-content h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; padding-bottom: 6px; border-bottom: 1px solid #e8d5c8; }
+  .about-content p { color: #8b7355; font-size: 15px; line-height: 1.95; margin-bottom: 1em; }
+  .about-content p + p { margin-top: 0; }
+
+  .contact-list { list-style: none; padding: 0; }
+  .contact-list li { margin-bottom: 10px; font-size: 15px; color: #8b7355; }
+  .contact-list a { color: #8b6914; text-decoration: underline; text-underline-offset: 3px; }
+  .contact-list a:hover { color: #c96442; }
+</style>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>张明轩 · 个人网站</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Dancing+Script:wght@500;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Serif SC', serif; background: #f5f0e3; color: #3e2723; -webkit-font-smoothing: antialiased; }
+
+  /* 导航栏 */
+  nav {
+    display: flex; align-items: center;
+    padding: 20px 0; border-bottom: 1px solid #e8d5c8;
+    background: rgba(245,240,227,0.95); position: sticky; top: 0; z-index: 10;
+  }
+  .nav-links { display: flex; gap: 61.5px; font-size: 16px; }
+  .nav-links a { color: #8b7355; text-decoration: none; transition: color 0.2s; }
+  .nav-links a:hover { color: #3e2723; }
+
+  /* 内容区 */
+  .container { max-width: 960px; margin: 0 auto; padding: 0 24px; width: 100%; }
+
+  /* Section 标题 — 方案A：14px */
+  .section-title {
+    font-size: 14px; text-transform: uppercase; letter-spacing: 2.5px;
+    color: #b8956a; margin-bottom: 24px; font-weight: 600;
+  }
+
+  /* Recent Thoughts */
+  .recent-thoughts { padding: 60px 0 42px; }
+  .recent-thoughts .thought-secondary { margin-bottom: 36px; }
+  .recent-thoughts .thought-secondary h3 { font-size: 20px; font-weight: 600; line-height: 1.5; }
+  .thought-link { text-decoration: none; color: inherit; }
+  .thought-link:hover h2, .thought-link:hover h3 { color: #8b6914; }
+  .thought-meta { display: flex; align-items: center; gap: 12px; font-size: 13px; color: #b8956a; margin-top: 12px; }
+  .thought-desc { color: #8b7355; line-height: 1.85; margin-top: 10px; }
+  .read-link {
+    display: inline-block; margin-top: 8px;
+    color: #c96442; font-size: 14px; text-decoration: none; font-weight: 500;
+  }
+  .read-link:hover { text-decoration: underline; }
+
+  /* 作品集 */
+  .projects-section { margin-bottom: 48px; }
+  .projects-grid { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+  .project-card {
+    flex: 1 1 calc(50% - 10px); min-width: 280px;
+    background: #faf3ea; border: 1px solid #e8d5c8; border-radius: 6px; padding: 24px;
+  }
+  .project-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 10px; }
+  .project-card .desc { color: #8b7355; font-size: 14px; line-height: 1.7; margin-bottom: 16px; }
+  .project-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .project-tags span { padding: 3px 12px; background: #f5e6d3; color: #8b6914; border-radius: 3px; font-size: 11px; }
+
+  .btn-more { text-align: center; }
+  .btn-more a {
+    color: #8b6914; font-size: 14px; text-decoration: none; font-weight: 500;
+    padding: 8px 24px; border: 1px solid #d4b896; border-radius: 4px;
+    display: inline-block; transition: all 0.2s;
+  }
+  .btn-more a:hover { background: #faf3ea; border-color: #b8956a; }
+
+  /* Timeline */
+  .timeline-section { margin-bottom: 48px; }
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 0; top: 11px; bottom: 0;
+    width: 1px; background: #d4b896;
+  }
+  .timeline-item { position: relative; margin-bottom: 36px; }
+  .timeline-item:last-child { margin-bottom: 12px; }
+  .timeline-item::before {
+    content: ''; position: absolute; left: -36px; top: 8px;
+    width: 10px; height: 10px; background: #d44; border-radius: 50%;
+  }
+  .timeline-date { font-size: 12px; color: #b8956a; margin-bottom: 6px; }
+  .timeline-item h4 { font-size: 16px; font-weight: 600; line-height: 1.5; margin-bottom: 4px; }
+  .timeline-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+  .timeline-tags span { padding: 2px 10px; background: #f5e6d3; color: #8b6914; border-radius: 3px; font-size: 11px; }
+  .timeline-item p { color: #8b7355; font-size: 14px; line-height: 1.75; }
+
+  /* About — 两段之间间距去掉 */
+  .about-section { margin-bottom: 60px; }
+  .about-section p { color: #8b7355; font-size: 15px; line-height: 1.95; }
+  .about-section p + p { margin-top: 0; }
+  .about-section p a { color: #8b6914; text-decoration: underline; text-underline-offset: 3px; }
+
+  /* 页脚 — MORI + 紫粉心 */
+  footer {
+    border-top: 1px solid #e8d5c8; padding: 24px 40px; text-align: center;
+    font-size: 12px; color: #b8956a;
+  }
+  .heart-accent { color: #c44a7c; }
+</style>
+</head>
+<body>
+
+<!-- ===== 1. 导航栏 ===== -->
+<nav>
+  <div class="container">
+    <div class="nav-links">
+      <a href="/">首页</a>
+      <a href="/ai-learning/">AI 学习记</a>
+      <a href="/ops-notes/">运维记</a>
+      <a href="/reading-life/">读书 &amp; 生活感悟</a>
+      <a href="/projects/">作品集</a>
+      <a href="/about/">About&nbsp; <span style="font-family: 'Dancing Script', cursive; font-weight: 700; font-size: 24px;">mori</span></a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- ===== 2. Recent Thoughts ===== -->
+<section class="recent-thoughts">
+  <div class="section-title">Recent Thoughts</div>
+
+  <article class="thought-secondary">
+    <a href="#" class="thought-link">
+      <h3>从零搭建 Kubernetes 可观测性体系</h3>
+    </a>
+    <p class="thought-desc">
+      从 Prometheus 到 Grafana，一步步记录如何在生产环境中构建可观测性管道——指标采集、告警规则、面板设计，以及踩过的坑和最终方案。
+    </p>
+    <div class="thought-meta">
+      <span>运维记</span><span>·</span><span>2026-07-10</span>
+    </div>
+      </article>
+
+  <article class="thought-secondary">
+    <a href="#" class="thought-link">
+      <h3>Claude Code 实战：用 AI 辅助 DevOps 日常工作</h3>
+    </a>
+    <p class="thought-desc">
+      记录过去三个月用 Claude Code 写脚本、排查故障、生成配置的实践经验——什么场景下 AI 是倍增器，什么情况下反而更慢。
+    </p>
+    <div class="thought-meta">
+      <span>AI 学习记</span><span>·</span><span>2026-07-05</span>
+    </div>
+      </article>
+</section>
+
+<!-- ===== 3. 作品集 ===== -->
+<section class="projects-section">
+  <div class="section-title">Projects</div>
+
+  <div class="projects-grid">
+    <div class="project-card">
+      <h3>Web Health Monitor</h3>
+      <p class="desc">Python + Flask 构建的健康监控面板，支持多站点并行 HTTP/ICMP 检测，Prometheus 指标导出，Grafana 面板可视化。</p>
+      <div class="project-tags">
+        <span>Python</span><span>Flask</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <h3>CI/CD Demo 环境</h3>
+      <p class="desc">一套完整的 CI/CD 流水线演示环境，涵盖 GitHub Actions 自动构建、Docker 容器化、多环境部署策略。</p>
+      <div class="project-tags">
+        <span>GitHub Actions</span><span>Docker</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <h3>Prometheus + Grafana 监控架构</h3>
+      <p class="desc">从架构设计到落地实践，完整记录 Prometheus 联邦集群 + Grafana 统一面板的技术方案。</p>
+      <div class="project-tags">
+        <span>Prometheus</span><span>Grafana</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <h3>Docker 容器化实践</h3>
+      <p class="desc">Dockerfile 最佳实践、多阶段构建、compose 编排，以及镜像安全扫描的一套学习笔记和示例仓库。</p>
+      <div class="project-tags">
+        <span>Docker</span><span>DevOps</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-more">
+    <a href="/projects/">查看全部作品 →</a>
+  </div>
+</section>
+
+<!-- ===== 4. AI 学习记 — Timeline ===== -->
+<section class="timeline-section">
+  <div class="section-title">AI 学习记</div>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-date">2026-07-05</div>
+      <a href="#" class="thought-link"><h4>Claude Code 实战：用 AI 辅助 DevOps 日常工作</h4></a>
+      <div class="timeline-tags"><span>Claude Code</span><span>DevOps</span></div>
+      <p>什么场景下 AI 是倍增器，什么情况下反而更慢——三个月的真实使用记录。</p>
+          </div>
+
+    <div class="timeline-item">
+      <div class="timeline-date">2026-06-28</div>
+      <a href="#" class="thought-link"><h4>用 LLM 自动生成监控告警规则——可行吗？</h4></a>
+      <div class="timeline-tags"><span>LLM</span><span>Prometheus</span></div>
+      <p>尝试用大模型从自然语言描述生成 Prometheus 告警规则，结果出人意料。</p>
+          </div>
+
+    <div class="timeline-item">
+      <div class="timeline-date">2026-06-15</div>
+      <a href="#" class="thought-link"><h4>RAG 入门：给你的文档库装上对话能力</h4></a>
+      <div class="timeline-tags"><span>RAG</span><span>LLM</span></div>
+      <p>从向量嵌入到检索增强生成，一步一步搭建一个能聊天的技术文档助手。</p>
+          </div>
+  </div>
+
+  <div class="btn-more" style="margin-top:28px;">
+    <a href="/ai-learning/">更多 AI 学习记 →</a>
+  </div>
+</section>
+
+<!-- ===== 5. About ===== -->
+<section class="about-section">
+  <div class="section-title">About</div>
+  <p>
+    一个运维工程师的随笔、学习之旅、书页间&生活中启发。
+  </p>
+  <p>
+    目前关注的方向：AI 开发、CICD、以及如何用更好的工具提升团队效率。
+  </p>
+  <p>
+    欢迎通过 <a href="mailto:baomorigejile@gmail.com">邮件</a> 或 <a href="https://github.com/morigejile">GitHub</a> 与我交流。
+  </p>
+</section>
+</div>
+
+<!-- ===== 6. 页脚 ===== -->
+<footer>
+  &copy; 2026&nbsp;&nbsp;&nbsp;&nbsp;<strong>MORI</strong> &middot; 用 <span class="heart-accent">💜</span> 和 AI 搭建
+</footer>
+
+</body>
+</html>

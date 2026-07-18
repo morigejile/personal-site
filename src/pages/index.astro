@@ -1,0 +1,143 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+// 获取所有 featured 文章
+const allFeatured = await getCollection('ai-learning', ({ data }) => data.featured);
+const opsFeatured = await getCollection('ops-notes', ({ data }) => data.featured);
+const readingsFeatured = await getCollection('reading-life', ({ data }) => data.featured);
+const projectsFeatured = await getCollection('projects', ({ data }) => data.featured);
+
+// Recent Thoughts: 取所有 featured 中最新的 2 篇
+const recentThoughts = [...allFeatured, ...opsFeatured, ...readingsFeatured]
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 2);
+
+// AI 学习记 timeline
+const aiTimeline = allFeatured
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 5);
+---
+
+<BaseLayout title="张明轩 · 个人网站">
+  <div class="container">
+
+    <!-- Recent Thoughts -->
+    <section class="section-block">
+      <div class="section-title">Recent Thoughts</div>
+      {
+        recentThoughts.map(entry => (
+          <article class="thought-secondary">
+            <a href={`/${entry.collection}/${entry.slug}/`} class="thought-link">
+              <h3>{entry.data.title}</h3>
+            </a>
+            <p class="thought-desc">{entry.data.summary}</p>
+            <div class="thought-meta">
+              <span>{entry.data.category}</span><span>·</span><span>{entry.data.date}</span>
+            </div>
+          </article>
+        ))
+      }
+    </section>
+
+    <!-- Projects -->
+    <section class="section-block">
+      <div class="section-title">Projects</div>
+      <div class="projects-grid">
+        {
+          projectsFeatured.slice(0, 4).map(entry => (
+            <div class="project-card">
+              <h3>{entry.data.title}</h3>
+              <p class="desc">{entry.data.summary}</p>
+              <div class="project-tags">
+                {entry.data.tags.slice(0, 2).map(tag => <span>{tag}</span>)}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <div class="btn-more">
+        <a href="/projects/">查看全部作品 →</a>
+      </div>
+    </section>
+
+    <!-- AI 学习记 Timeline -->
+    <section class="section-block">
+      <div class="section-title">AI 学习记</div>
+      <div class="timeline">
+        {
+          aiTimeline.map(entry => (
+            <div class="timeline-item">
+              <div class="timeline-date">{entry.data.date}</div>
+              <a href={`/ai-learning/${entry.slug}/`} class="thought-link"><h4>{entry.data.title}</h4></a>
+              <div class="timeline-tags">
+                {entry.data.tags.map(tag => <span>{tag}</span>)}
+              </div>
+              <p>{entry.data.summary}</p>
+            </div>
+          ))
+        }
+      </div>
+      <div class="btn-more" style="margin-top:28px;">
+        <a href="/ai-learning/">更多 AI 学习记 →</a>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="section-block">
+      <div class="section-title">About</div>
+      <div class="about-text">
+        <p>一个运维工程师的随笔、学习之旅、书页间&生活中启发。</p>
+        <p>目前关注的方向：AI 开发、CICD、以及如何用更好的工具提升团队效率。</p>
+        <p>
+          欢迎通过 <a href="mailto:baomorigejile@gmail.com">邮件</a>
+          或 <a href="https://github.com/morigejile">GitHub</a> 与我交流。
+        </p>
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<style is:global>
+  /* Recent Thoughts */
+  .thought-secondary { margin-bottom: 36px; }
+  .thought-secondary:last-child { margin-bottom: 0; }
+  .thought-secondary h3 { font-size: 20px; font-weight: 600; line-height: 1.5; }
+  .thought-desc { color: #8b7355; line-height: 1.85; margin-top: 10px; }
+  .thought-meta { display: flex; align-items: center; gap: 12px; font-size: 13px; color: #b8956a; margin-top: 12px; }
+
+  /* Projects */
+  .projects-grid { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+  .project-card {
+    flex: 1 1 calc(50% - 10px); min-width: 280px;
+    background: #faf3ea; border: 1px solid #e8d5c8; border-radius: 6px; padding: 24px;
+  }
+  .project-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 10px; }
+  .project-card .desc { color: #8b7355; font-size: 14px; line-height: 1.7; margin-bottom: 16px; }
+  .project-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .project-tags span { padding: 3px 12px; background: #f5e6d3; color: #8b6914; border-radius: 3px; font-size: 11px; }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 0; top: 11px; bottom: 4px;
+    width: 1px; background: #d4b896;
+  }
+  .timeline-item { position: relative; margin-bottom: 36px; }
+  .timeline-item:last-child { margin-bottom: 12px; }
+  .timeline-item::before {
+    content: ''; position: absolute; left: -36px; top: 8px;
+    width: 10px; height: 10px; background: #d44; border-radius: 50%;
+  }
+  .timeline-date { font-size: 12px; color: #b8956a; margin-bottom: 6px; }
+  .timeline-item h4 { font-size: 16px; font-weight: 600; line-height: 1.5; margin-bottom: 4px; }
+  .timeline-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+  .timeline-tags span { padding: 2px 10px; background: #f5e6d3; color: #8b6914; border-radius: 3px; font-size: 11px; }
+  .timeline-item p { color: #8b7355; font-size: 14px; line-height: 1.75; }
+
+  /* About */
+  .about-text p { color: #8b7355; font-size: 15px; line-height: 1.95; }
+  .about-text p + p { margin-top: 0; }
+  .about-text a { color: #8b6914; text-decoration: underline; text-underline-offset: 3px; }
+</style>

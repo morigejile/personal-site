@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const entries = await getCollection('ops-notes');
+const sorted = entries.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+---
+
+<BaseLayout title="运维记 · 张明轩">
+  <div class="container">
+    <div class="list-header">
+      <span class="list-category-tag">运维记</span>
+      <p class="list-description">Kubernetes、可观测性、CICD 与基础设施实践</p>
+    </div>
+
+    <div class="list-items">
+      {
+        sorted.map(entry => (
+          <a href={`/ops-notes/${entry.slug}/`} class="list-item">
+            <h3 class="list-item-title">{entry.data.title}</h3>
+            <div class="list-item-meta">
+              <span>{entry.data.date}</span>
+              <div class="list-item-tags">
+                {entry.data.tags.map(tag => <span>{tag}</span>)}
+              </div>
+            </div>
+            <p class="list-item-summary">{entry.data.summary}</p>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

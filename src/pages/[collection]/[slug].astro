@@ -1,0 +1,222 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, getEntryBySlug } from 'astro:content';
+
+export async function getStaticPaths() {
+  const collections = ['ai-learning', 'ops-notes', 'reading-life', 'projects'];
+  const allEntries = [];
+  for (const col of collections) {
+    const entries = await getCollection(col);
+    for (const entry of entries) {
+      allEntries.push({
+        params: { collection: col, slug: entry.slug },
+        props: { collection: col, slug: entry.slug },
+      });
+    }
+  }
+  return allEntries;
+}
+
+const { collection, slug } = Astro.params;
+const entry = await getEntryBySlug(collection!, slug!);
+if (!entry) return Astro.redirect('/404');
+
+const { Content, headings } = await entry.render();
+const tocHeadings = headings.filter(h => h.depth <= 3);
+
+// 同集合内按日期排序，找上一篇/下一篇
+const siblings = await getCollection(collection!, ({ data }) => data.date ? true : false);
+siblings.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const curIdx = siblings.findIndex(e => e.slug === slug);
+const prevEntry = curIdx < siblings.length - 1 ? siblings[curIdx + 1] : null;
+const nextEntry = curIdx > 0 ? siblings[curIdx - 1] : null;
+
+// 相关文章：取同标签的其他集合文章
+const entryTags = entry.data.tags || [];
+const relatedResults: Array<{ collection: string; slug: string; data: { title: string; date: string; tags: string[]; category: string } }> = [];
+if (entryTags.length > 0) {
+  const otherCollections = ['ai-learning', 'ops-notes', 'reading-life', 'projects'].filter(c => c !== collection);
+  for (const col of otherCollections) {
+    const colEntries = await getCollection(col);
+    for (const e of colEntries) {
+      if (e.data.tags?.some((t: string) => entryTags.includes(t))) {
+        relatedResults.push({ collection: col, slug: e.slug, data: e.data as any });
+        if (relatedResults.length >= 4) break;
+      }
+    }
+    if (relatedResults.length >= 4) break;
+  }
+}
+---
+
+<BaseLayout title={`${entry.data.title} · 张明轩`} description={entry.data.summary}>
+  <div class="article-layout">
+    <!-- TOC Sidebar -->
+    {
+      headings.length > 0 && (
+        <aside class="toc-sidebar">
+          <div class="toc-title">目录</div>
+          <nav class="toc-nav">
+            {
+              tocHeadings.map(h => (
+                <a
+                  href={`#${h.slug}`}
+                  class={`toc-link depth-${h.depth}`}
+                >
+                  {h.text}
+                </a>
+              ))
+            }
+          </nav>
+        </aside>
+      )
+    }
+
+    <!-- Article body -->
+    <article class="article-body">
+      <div class="article-header">
+        <div class="article-meta">
+          <span class="article-category">{entry.data.category}</span>
+          <span class="article-date">{entry.data.date}</span>
+        </div>
+        <h1 class="article-title">{entry.data.title}</h1>
+        <div class="article-tags">
+          {entry.data.tags.map(tag => <span>{tag}</span>)}
+        </div>
+      </div>
+
+      <div class="article-content">
+        <Content />
+      </div>
+
+      <!-- Prev / Next -->
+      <div class="article-nav">
+        {
+          prevEntry ? (
+            <a href={`/${collection}/${prevEntry.slug}/`} class="article-nav-link prev">
+              <span class="nav-label">← 上一篇</span>
+              <span class="nav-title">{prevEntry.data.title}</span>
+            </a>
+          ) : <div></div>
+        }
+        {
+          nextEntry ? (
+            <a href={`/${collection}/${nextEntry.slug}/`} class="article-nav-link next">
+              <span class="nav-label">下一篇 →</span>
+              <span class="nav-title">{nextEntry.data.title}</span>
+            </a>
+          ) : <div></div>
+        }
+      </div>
+
+      <!-- Related articles -->
+      {
+        relatedResults.length > 0 && (
+          <section class="related-section">
+            <div class="section-title" style="margin-top:48px;">相关文章</div>
+            <div class="related-grid">
+              {
+                relatedResults.map(r => (
+                  <a href={`/${r.collection}/${r.slug}/`} class="related-card">
+                    <h4>{r.data.title}</h4>
+                    <div class="related-meta">
+                      <span>{r.data.category}</span>
+                      <span>·</span>
+                      <span>{r.data.date}</span>
+                    </div>
+                  </a>
+                ))
+              }
+            </div>
+          </section>
+        )
+      }
+    </article>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  /* 文章布局 */
+  .article-layout { display: flex; gap: 48px; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* TOC 侧边栏 */
+  .toc-sidebar {
+    width: 200px; flex-shrink: 0;
+    position: sticky; top: 100px; align-self: start;
+    padding: 48px 0 0;
+  }
+  .toc-title { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #b8956a; margin-bottom: 16px; font-weight: 600; }
+  .toc-nav { display: flex; flex-direction: column; gap: 6px; }
+  .toc-link { color: #8b7355; font-size: 13px; line-height: 1.6; transition: color 0.15s; }
+  .toc-link:hover { color: #c96442; }
+  .toc-link.depth-2 { padding-left: 0; }
+  .toc-link.depth-3 { padding-left: 12px; font-size: 12px; }
+
+  /* 文章主体 */
+  .article-body {
+    flex: 1; min-width: 0;
+    padding: 48px 0 60px;
+  }
+  .article-header { margin-bottom: 36px; }
+  .article-meta { display: flex; align-items: center; gap: 16px; font-size: 13px; color: #b8956a; margin-bottom: 12px; }
+  .article-category { padding: 3px 14px; background: #f5e6d3; color: #8b6914; border-radius: 3px; font-size: 12px; font-weight: 600; }
+  .article-title { font-size: 28px; font-weight: 700; line-height: 1.4; margin-bottom: 12px; }
+  .article-tags { display: flex; gap: 6px; }
+  .article-tags span { padding: 2px 10px; background: #f5e6d3; color: #8b6914; border-radius: 3px; font-size: 11px; }
+
+  /* 文章内容排版 */
+  .article-content { font-size: 16px; line-height: 1.9; color: #3e2723; }
+  .article-content h2, .article-content h3 {
+    scroll-margin-top: 100px; margin-top: 2em; margin-bottom: 0.6em; font-weight: 600; line-height: 1.4;
+  }
+  .article-content h2 { font-size: 22px; border-bottom: 1px solid #e8d5c8; padding-bottom: 8px; }
+  .article-content h3 { font-size: 18px; }
+  .article-content p { margin-bottom: 1.2em; }
+  .article-content ul, .article-content ol { margin-bottom: 1.2em; padding-left: 1.5em; }
+  .article-content li { margin-bottom: 0.4em; }
+  .article-content code {
+    font-family: 'Source Code Pro', monospace;
+    background: #faf3ea; padding: 2px 6px; border-radius: 3px; font-size: 0.9em;
+  }
+  .article-content pre code { background: none; padding: 0; }
+  .article-content pre {
+    background: #faf3ea; border: 1px solid #e8d5c8; border-radius: 6px;
+    padding: 16px; overflow-x: auto; font-size: 14px; line-height: 1.6;
+    margin-bottom: 1.5em;
+  }
+  .article-content a { color: #c96442; text-decoration: underline; text-underline-offset: 3px; }
+  .article-content a:hover { color: #8b6914; }
+  .article-content blockquote {
+    border-left: 3px solid #d4b896; padding-left: 16px; margin: 1.5em 0;
+    color: #8b7355; font-style: italic;
+  }
+  .article-content img { max-width: 100%; border-radius: 6px; margin: 1.5em 0; }
+
+  /* 上/下一篇 */
+  .article-nav { display: flex; justify-content: space-between; gap: 24px; margin-top: 48px; padding-top: 24px; border-top: 1px solid #e8d5c8; }
+  .article-nav-link { flex: 1; text-decoration: none; padding: 16px; border: 1px solid #e8d5c8; border-radius: 6px; transition: border-color 0.2s; }
+  .article-nav-link:hover { border-color: #b8956a; }
+  .article-nav-link.next { text-align: right; }
+  .nav-label { display: block; font-size: 12px; color: #b8956a; margin-bottom: 4px; }
+  .nav-title { font-size: 15px; font-weight: 600; color: #3e2723; line-height: 1.4; }
+
+  /* 相关文章 */
+  .related-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-bottom: 48px; }
+  .related-card {
+    display: block; padding: 20px; border: 1px solid #e8d5c8; border-radius: 6px;
+    text-decoration: none; transition: border-color 0.2s;
+  }
+  .related-card:hover { border-color: #b8956a; }
+  .related-card h4 { font-size: 15px; font-weight: 600; line-height: 1.5; margin-bottom: 8px; }
+  .related-meta { font-size: 12px; color: #b8956a; display: flex; gap: 8px; }
+
+  @media (max-width: 900px) {
+    .toc-sidebar { display: none; }
+    .article-layout { max-width: 960px; }
+  }
+  @media (max-width: 640px) {
+    .related-grid { grid-template-columns: 1fr; }
+    .article-nav { flex-direction: column; }
+    .article-nav-link.next { text-align: left; }
+  }
+</style>

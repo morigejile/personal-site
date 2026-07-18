@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const entries = await getCollection('projects');
+const sorted = entries.sort((a, b) => new Date(b.data.date || '').getTime() - new Date(a.data.date || '').getTime());
+---
+
+<BaseLayout title="作品集 · 张明轩">
+  <div class="container">
+    <div class="list-header">
+      <span class="list-category-tag">作品集</span>
+      <p class="list-description">一些有意思的项目和工具</p>
+    </div>
+
+    <div class="projects-list-grid">
+      {
+        sorted.map(entry => (
+          <a href={`/projects/${entry.slug}/`} class="project-card-link">
+            <div class="project-card-full">
+              <h3>{entry.data.title}</h3>
+              <p class="desc">{entry.data.summary}</p>
+              <div class="project-tags">
+                {entry.data.tags.map(tag => <span>{tag}</span>)}
+              </div>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  .projects-list-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    padding-bottom: 60px;
+  }
+  .project-card-link { text-decoration: none; color: inherit; display: block; }
+  .project-card-full {
+    background: #faf3ea; border: 1px solid #e8d5c8; border-radius: 6px; padding: 28px;
+    height: 100%; transition: border-color 0.2s;
+  }
+  .project-card-full:hover { border-color: #b8956a; }
+  .project-card-full h3 { font-size: 18px; font-weight: 600; margin-bottom: 10px; }
+  .project-card-full .desc { color: #8b7355; font-size: 14px; line-height: 1.7; margin-bottom: 16px; }
+  .project-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .project-tags span { padding: 3px 12px; background: #f5e6d3; color: #8b6914; border-radius: 3px; font-size: 11px; }
+
+  @media (max-width: 640px) {
+    .projects-list-grid { grid-template-columns: 1fr; }
+  }
+</style>
