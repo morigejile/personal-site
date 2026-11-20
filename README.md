@@ -26,7 +26,7 @@ python -m http.server 4321
 | 布局 | 960px 单列居中（padding 0 24px） |
 | 内容管理 | Markdown + Git |
 | 首页结构 | Recent Thoughts → Projects → AI 学习记(Timeline) → About |
-| 导航 | 首页 / AI 学习记 / 运维记 / 读书 & 生活感悟 / 作品集 / About mori（左对齐） |
+| 导航 | 首页 / AI 学习记 / 运维记 / 读书 & 感悟 / 作品集 / About mori（左对齐） |
 | 品牌标识 | About **mori**（Dancing Script 24px，手写体） |
 | 区域标题格式 | 14px / 600 / uppercase / letter-spacing 2.5px |
 | 页脚 | © 2026 **MORI** · 用 💜（#c44a7c 紫粉）和 AI 搭建 |

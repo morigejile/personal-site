@@ -1,15 +1,16 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import { readingLifeLabel } from '../../site-labels';
 
 const entries = await getCollection('reading-life');
 const sorted = entries.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 ---
 
-<BaseLayout title="读书 & 生活感悟">
+<BaseLayout title={readingLifeLabel}>
   <div class="container">
     <div class="list-header">
-      <span class="list-category-tag">读书 &amp; 生活感悟</span>
+      <span class="list-category-tag">{readingLifeLabel}</span>
       <p class="list-description">书页间的思考，生活中的启发</p>
     </div>
 

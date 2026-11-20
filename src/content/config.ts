@@ -1,4 +1,5 @@
 import { defineCollection, z } from 'astro:content';
+import { readingLifeLabel } from '../site-labels';
 
 const aiLearning = defineCollection({
   schema: z.object({
@@ -26,7 +27,7 @@ const readingLife = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.string(),
-    category: z.literal('读书 & 生活感悟'),
+    category: z.enum([readingLifeLabel, '读书 & 生活感悟']).transform(() => readingLifeLabel),
     tags: z.array(z.string()),
     summary: z.string(),
     featured: z.boolean().default(false),

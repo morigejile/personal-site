@@ -1,4 +1,6 @@
 ---
+import { readingLifeLabel } from '../site-labels';
+
 interface Props {
   title?: string;
   description?: string;
@@ -39,7 +41,7 @@ const pageTitle = title ? `${title} · ${siteName}` : `${siteName} · 个人网�
         <a href="/">首页</a>
         <a href="/ai-learning/">AI 学习记</a>
         <a href="/ops-notes/">运维记</a>
-        <a href="/reading-life/">读书 &amp; 生活感悟</a>
+        <a href="/reading-life/">{readingLifeLabel}</a>
         <a href="/projects/">作品集</a>
         <a href="/about/">About&nbsp; <span class="nav-mori">mori</span></a>
       </div>
