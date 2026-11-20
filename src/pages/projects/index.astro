@@ -6,7 +6,7 @@ const entries = await getCollection('projects');
 const sorted = entries.sort((a, b) => new Date(b.data.date || '').getTime() - new Date(a.data.date || '').getTime());
 ---
 
-<BaseLayout title="作品集 · 张明轩">
+<BaseLayout title="作品集">
   <div class="container">
     <div class="list-header">
       <span class="list-category-tag">作品集</span>

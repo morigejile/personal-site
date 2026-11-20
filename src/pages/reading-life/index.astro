@@ -6,7 +6,7 @@ const entries = await getCollection('reading-life');
 const sorted = entries.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 ---
 
-<BaseLayout title="读书 & 生活感悟 · 张明轩">
+<BaseLayout title="读书 & 生活感悟">
   <div class="container">
     <div class="list-header">
       <span class="list-category-tag">读书 &amp; 生活感悟</span>

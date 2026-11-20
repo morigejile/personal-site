@@ -4,7 +4,9 @@ interface Props {
   description?: string;
 }
 
-const { title = '张明轩 · 个人网站', description = '一个运维工程师的随笔、学习之旅与生活启发' } = Astro.props;
+const siteName = 'mori';
+const { title, description = '一个运维工程师的随笔、学习之旅与生活启发' } = Astro.props;
+const pageTitle = title ? `${title} · ${siteName}` : `${siteName} · 个人网站`;
 ---
 
 <!DOCTYPE html>
@@ -12,7 +14,7 @@ const { title = '张明轩 · 个人网站', description = '一个运维工程�
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{title}</title>
+  <title>{pageTitle}</title>
   <meta name="description" content={description} />
   <link
     href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Dancing+Script:wght@500;700&family=Source+Code+Pro:wght@400;500&display=swap"
@@ -48,7 +50,7 @@ const { title = '张明轩 · 个人网站', description = '一个运维工程�
   </main>
 
   <footer>
-    &copy; 2026&nbsp;&nbsp;&nbsp;&nbsp;<strong>MORI</strong> &middot; 用 <span class="heart-accent">&#x1f49c;</span> 和 AI 搭建
+    &copy; 2026&nbsp;&nbsp;&nbsp;&nbsp;<strong>{siteName.toUpperCase()}</strong>
   </footer>
 
   <style is:global>
@@ -86,7 +88,6 @@ const { title = '张明轩 · 个人网站', description = '一个运维工程�
       border-top: 1px solid #e8d5c8; padding: 24px 40px; text-align: center;
       font-size: 12px; color: #b8956a;
     }
-    .heart-accent { color: #c44a7c; }
 
     /* 工具类 */
     .thought-link { text-decoration: none; color: inherit; }
