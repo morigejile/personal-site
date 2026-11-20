@@ -7,6 +7,7 @@ const allFeatured = await getCollection('ai-learning', ({ data }) => data.featur
 const opsFeatured = await getCollection('ops-notes', ({ data }) => data.featured);
 const readingsFeatured = await getCollection('reading-life', ({ data }) => data.featured);
 const projectsFeatured = await getCollection('projects', ({ data }) => data.featured);
+projectsFeatured.sort((a, b) => (b.data.date ?? '').localeCompare(a.data.date ?? ''));
 
 // Recent Thoughts: 取所有 featured 中最新的 2 篇
 const recentThoughts = [...allFeatured, ...opsFeatured, ...readingsFeatured]
@@ -46,13 +47,13 @@ const aiTimeline = allFeatured
       <div class="projects-grid">
         {
           projectsFeatured.slice(0, 4).map(entry => (
-            <div class="project-card">
+            <a href={`/projects/${entry.slug}/`} class="project-card">
               <h3>{entry.data.title}</h3>
               <p class="desc">{entry.data.summary}</p>
               <div class="project-tags">
                 {entry.data.tags.slice(0, 2).map(tag => <span>{tag}</span>)}
               </div>
-            </div>
+            </a>
           ))
         }
       </div>
@@ -113,6 +114,7 @@ const aiTimeline = allFeatured
     flex: 1 1 calc(50% - 10px); min-width: 280px;
     background: #faf3ea; border: 1px solid #e8d5c8; border-radius: 6px; padding: 24px;
   }
+  .project-card:hover, .project-card:focus-visible { border-color: #b8956a; }
   .project-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 10px; }
   .project-card .desc { color: #8b7355; font-size: 14px; line-height: 1.7; margin-bottom: 16px; }
   .project-tags { display: flex; gap: 8px; flex-wrap: wrap; }
