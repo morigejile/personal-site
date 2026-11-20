@@ -1,15 +1,16 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import { projectsLabel } from '../../site-labels';
 
 const entries = await getCollection('projects');
 const sorted = entries.sort((a, b) => new Date(b.data.date || '').getTime() - new Date(a.data.date || '').getTime());
 ---
 
-<BaseLayout title="作品集">
+<BaseLayout title={projectsLabel}>
   <div class="container">
     <div class="list-header">
-      <span class="list-category-tag">作品集</span>
+      <span class="list-category-tag">{projectsLabel}</span>
       <p class="list-description">一些有意思的项目和工具</p>
     </div>
 
